@@ -40,10 +40,10 @@ def create_app(test_config=None):
     def get_categories():
         try:
             categories = Category.query.order_by(Category.type).all()
+            temp = {i.id: i.type for i in categories}
             if len(categories) == 0:
                 abort(404)
-            return jsonify({"success": True, "categories": {
-                           category.id: category.type for category in categories}})
+            return jsonify({"success": True, "categories": temp})
         except BaseException:
             abort(500)
 
@@ -88,7 +88,8 @@ def create_app(test_config=None):
         body = request.get_json()
 
         if not (
-                'question' in body and 'answer' in body and 'difficulty' in body and 'category' in body):
+                'question' in body and 'answer' in body and
+                'difficulty' in body and 'category' in body):
             abort(422)
 
         new_quest = body.get('question')
@@ -119,10 +120,11 @@ def create_app(test_config=None):
         if search_term:
             search_results = Question.query.filter(
                 Question.question.ilike(f'%{search_term}%')).all()
+            temp = [i.format() for i in search_results]
 
             return jsonify({
                 'success': True,
-                'questions': [question.format() for question in search_results],
+                'questions': temp,
                 'total_questions': len(search_results),
                 'current_category': None
             })
@@ -157,16 +159,16 @@ def create_app(test_config=None):
             previous_questions = body.get('previous_questions')
 
             if category['type'] == 'click':
-                available_questions = Question.query.filter(
+                arr = Question.query.filter(
                     Question.id.notin_((previous_questions))).all()
             else:
-                available_questions = Question.query.filter_by(
+                arr = Question.query.filter_by(
                     category=category['id']).filter(
                     Question.id.notin_(
                         (previous_questions))).all()
 
-            new_ques = available_questions[random.randrange(
-                0, len(available_questions))].format() if len(available_questions) > 0 else None
+            new_ques = arr[random.randrange(
+                0, len(arr))].format() if len(arr) > 0 else None
 
             return jsonify({
                 'success': True,
