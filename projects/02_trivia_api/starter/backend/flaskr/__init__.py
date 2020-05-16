@@ -54,7 +54,6 @@ def create_app(test_config=None):
 
         categories = Category.query.order_by(Category.type).all()
         category_dict = {i.id: i.type for i in categories}
-        # arr = [i['type'] for i in categories]
 
         if len(question_list) == 0:
             abort(404)
