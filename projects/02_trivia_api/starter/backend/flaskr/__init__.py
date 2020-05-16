@@ -54,7 +54,7 @@ def create_app(test_config=None):
 
         categories = Category.query.order_by(Category.type).all()
         category_dict = {i.id: i.type for i in categories}
-        arr = [i['type'] for i in categories]
+        # arr = [i['type'] for i in categories]
 
         if len(question_list) == 0:
             abort(404)
@@ -63,14 +63,13 @@ def create_app(test_config=None):
             'questions': question_list,
             'total_questions': len(selection),
             'categories': category_dict,
-            'current_category': arr
+            'current_category': None
         })
 
     @app.route('/questions/<int:ques_id>', methods=['DELETE'])
     def delete_question(ques_id):
         try:
-            question = Question.query.filter(
-                Question.id == ques_id).one_or_none()
+            question = Question.query.get(ques_id)
             if question is None:
                 abort(404)
             question.delete()
