@@ -51,7 +51,7 @@ def get_token_auth_header():
             'code':'invalid_header',
             'description':'Authorization header must start with "Bearer".'
             })
-    elif len(arrays)>2:
+    elif len(array)>2:
         raise AuthError({
             'code':'invalid_header',
             'description':'Authorization header must bearer token.'
